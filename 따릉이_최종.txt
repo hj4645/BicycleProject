@@ -1,0 +1,566 @@
+/* 답변 */
+CREATE TABLE answ (
+	inquiry_id VARCHAR2(200) NOT NULL, /* 문의글 식별번호 */
+	user_id VARCHAR2(100) NOT NULL, /* 회원 아이디(댓글 작성자) */
+	reply_content VARCHAR2(2000), /* 답변 내용 */
+	reply_date DATE /* 답변 작성일시 */
+);
+
+CREATE UNIQUE INDEX PK_answ
+	ON answ (
+		inquiry_id ASC
+	);
+
+ALTER TABLE answ
+	ADD
+		CONSTRAINT PK_answ
+		PRIMARY KEY (
+			inquiry_id
+		);
+
+/* 1대 1 문의 */
+CREATE TABLE qna (
+	inquiry_id VARCHAR2(200) NOT NULL, /* 문의글 식별번호 */
+	user_id VARCHAR2(100) NOT NULL, /* 회원 아이디 */
+	inquiry_title VARCHAR2(1000) NOT NULL, /* 제목 */
+	inquiry_contents VARCHAR2(4000) NOT NULL, /* 게시글 내용 */
+	inquiry_reg_date DATE NOT NULL /* 등록일자 */
+);
+
+CREATE UNIQUE INDEX PK_qna
+	ON qna (
+		inquiry_id ASC
+	);
+
+ALTER TABLE qna
+	ADD
+		CONSTRAINT PK_qna
+		PRIMARY KEY (
+			inquiry_id
+		);
+
+/* 회원정보 */
+CREATE TABLE u_info (
+	user_id VARCHAR2(100) NOT NULL, /* 회원 아이디 */
+	ticket_code NUMBER(4) DEFAULT 0, /* 이용권 식별번호 */
+	user_password VARCHAR2(50) NOT NULL, /* 회원 비밀번호 */
+	user_name VARCHAR2(200) NOT NULL, /* 회원 이름 */
+	user_email VARCHAR2(500) DEFAULT '입력안함', /* 회원 이메일 */
+	user_phone_num VARCHAR2(100) NOT NULL, /* 회원 전화번호 */
+	user_gender VARCHAR2(20) DEFAULT '입력안함', /* 회원 성별 */
+	user_birth VARCHAR2(100) DEFAULT '입력안함', /* 회원 생년월일 */
+	user_weight NUMBER(3) DEFAULT 65, /* 회원 체중 */
+	user_level CHAR(1) DEFAULT 0 /* 유저 레벨 */
+);
+
+CREATE UNIQUE INDEX PK_u_info
+	ON u_info (
+		user_id ASC
+	);
+
+ALTER TABLE u_info
+	ADD
+		CONSTRAINT PK_u_info
+		PRIMARY KEY (
+			user_id
+		);
+
+/* 공지사항 */
+CREATE TABLE notice (
+	notice_no VARCHAR2(50) NOT NULL, /* 공지번호 */
+	notice_title VARCHAR2(1000) NOT NULL, /* 공지제목 */
+	notice_content VARCHAR2(4000) NOT NULL, /* 공지내용 */
+	notice_date DATE NOT NULL /* 공지등록일자 */
+);
+
+CREATE UNIQUE INDEX PK_notice
+	ON notice (
+		notice_no ASC
+	);
+
+ALTER TABLE notice
+	ADD
+		CONSTRAINT PK_notice
+		PRIMARY KEY (
+			notice_no
+		);
+
+/* 자전거 대여 내역 */
+CREATE TABLE bic_rent (
+	bicycle_rent_id VARCHAR2(50) NOT NULL, /* 자전거 대여 식별번호 */
+	bicycle_id VARCHAR2(40) NOT NULL, /* 자전거 식별번호 */
+	user_id VARCHAR2(100) NOT NULL, /* 회원 아이디 */
+	voucher_id VARCHAR2(40) NOT NULL, /* 이용권 주문 식별번호 */
+	stand_id_start VARCHAR2(40), /* 대여소 식별번호(시작) */
+	stand_id_end VARCHAR2(40), /* 대여소 식별번호(종료) */
+	bicycle_distance_once NUMBER(10,2) DEFAULT 0, /* 대여 회당 이동거리 */
+	rent_start_time DATE NOT NULL, /* 대여 시작 일시 */
+	rent_return_time DATE, /* 대여 종료(반납) 일시 */
+	rent_late_fee NUMBER(10) DEFAULT 0 /* 대여 연체료 */
+);
+
+CREATE UNIQUE INDEX PK_bic_rent
+	ON bic_rent (
+		bicycle_rent_id ASC
+	);
+
+ALTER TABLE bic_rent
+	ADD
+		CONSTRAINT PK_bic_rent
+		PRIMARY KEY (
+			bicycle_rent_id
+		);
+
+/* 결제 서비스 관리 */
+CREATE TABLE paymt (
+	payment_service_code VARCHAR2(40) NOT NULL /* 결제 수단 */
+);
+
+CREATE UNIQUE INDEX PK_paymt
+	ON paymt (
+		payment_service_code ASC
+	);
+
+ALTER TABLE paymt
+	ADD
+		CONSTRAINT PK_paymt
+		PRIMARY KEY (
+			payment_service_code
+		);
+
+/* 자전거 대여소 */
+CREATE TABLE bic_std (
+	stand_id VARCHAR2(40) NOT NULL, /* 대여소 식별번호 */
+	stand_reg_date DATE NOT NULL, /* 대여소 설치일자 */
+	stand_name VARCHAR2(2000) NOT NULL, /* 대여소 이름 */
+	stand_address VARCHAR2(2000) NOT NULL, /* 대여소 주소 */
+	stand_latitude NUMBER(12, 8) DEFAULT 0.000000, /* 대여소 위도 */
+	stand_longitude NUMBER(12, 8) DEFAULT 0.000000, /* 대여소 경도 */
+	stand_parking_capacity NUMBER(5) DEFAULT 0, /* 총거치가능 수량 */
+	stand_current_storage NUMBER(5) DEFAULT 0 /* 현재거치 수량 */
+);
+
+CREATE UNIQUE INDEX PK_bic_std
+	ON bic_std (
+		stand_id ASC
+	);
+
+ALTER TABLE bic_std
+	ADD
+		CONSTRAINT PK_bic_std
+		PRIMARY KEY (
+			stand_id
+		);
+
+/* 자전거 정보 */
+CREATE TABLE bic_info (
+	bicycle_id VARCHAR2(40) NOT NULL, /* 자전거 식별번호 */
+	bicycle_model VARCHAR2(40) NOT NULL, /* 자전거 기종 */
+	bicycle_reg_date DATE NOT NULL, /* 자전거 등록일자 */
+	bicycle_stand VARCHAR2(2000), /* 대여소 이름 */
+	bicycle_status VARCHAR2(100) NOT NULL /* 자전거 상태정보 */
+);
+
+CREATE UNIQUE INDEX PK_bic_info
+	ON bic_info (
+		bicycle_id ASC
+	);
+
+ALTER TABLE bic_info
+	ADD
+		CONSTRAINT PK_bic_info
+		PRIMARY KEY (
+			bicycle_id
+		);
+
+/* 분실자전거 내역 */
+CREATE TABLE bic_lost (
+	bicycle_loss_no VARCHAR2(40) NOT NULL, /* 자전거 분실 식별번호 */
+	bicycle_id VARCHAR2(40) NOT NULL /* 자전거 식별번호 */
+);
+
+CREATE UNIQUE INDEX PK_bic_lost
+	ON bic_lost (
+		bicycle_loss_no ASC
+	);
+
+ALTER TABLE bic_lost
+	ADD
+		CONSTRAINT PK_bic_lost
+		PRIMARY KEY (
+			bicycle_loss_no
+		);
+
+/* 자전거 수리 내역 */
+CREATE TABLE bic_repr (
+	bicycle_repair_no VARCHAR2(50) NOT NULL, /* 자전거 수리 접수번호 */
+	bicycle_id VARCHAR2(40) NOT NULL, /* 자전거 식별번호 */
+	repair_start_date DATE NOT NULL, /* 자전거 수리접수일시 */
+	repair_cost NUMBER(10), /* 자전거 수리비용 */
+	repaired_or_not CHAR(1) DEFAULT 0, /* 자전거 수리여부 */
+	repair_finished_date DATE /* 자전거 수리완료일시 */
+);
+
+CREATE UNIQUE INDEX PK_bic_repr
+	ON bic_repr (
+		bicycle_repair_no ASC
+	);
+
+ALTER TABLE bic_repr
+	ADD
+		CONSTRAINT PK_bic_repr
+		PRIMARY KEY (
+			bicycle_repair_no
+		);
+
+/* 회원별 이용내역 */
+CREATE TABLE user_using (
+	user_id VARCHAR2(100) NOT NULL, /* 회원 아이디 */
+	user_total_mileage NUMBER(6) DEFAULT 0, /* 총 마일리지 */
+	user_used_min NUMBER(10) DEFAULT 0, /* 총 이용시간(분) */
+	user_used_km NUMBER(10,2) DEFAULT 0 /* 총 이동거리(km) */
+);
+
+CREATE UNIQUE INDEX PK_user_using
+	ON user_using (
+		user_id ASC
+	);
+
+ALTER TABLE user_using
+	ADD
+		CONSTRAINT PK_user_using
+		PRIMARY KEY (
+			user_id
+		);
+
+/* 이용권 주문 */
+CREATE TABLE t_order (
+	voucher_id VARCHAR2(40) NOT NULL, /* 이용권 주문 식별번호 */
+	user_id VARCHAR2(100) DEFAULT '비회원', /* 회원 아이디 */
+	ticket_code NUMBER(4), /* 이용권 식별번호 */
+	payment_service_code VARCHAR2(40), /* 결제 수단 */
+	order_duration_start DATE NOT NULL, /* 이용권 시작시간 */
+	order_duration_end DATE NOT NULL, /* 이용권 종료시간 */
+	order_fee NUMBER(10) NOT NULL, /* 이용 요금 */
+	order_paidtime DATE NOT NULL /* 이용권 구매시간 */
+);
+
+CREATE UNIQUE INDEX PK_t_order
+	ON t_order (
+		voucher_id ASC
+	);
+
+ALTER TABLE t_order
+	ADD
+		CONSTRAINT PK_t_order
+		PRIMARY KEY (
+			voucher_id
+		);
+
+/* 자주하는 질문 */
+CREATE TABLE freq_qna (
+	freq_number VARCHAR2(200) NOT NULL, /* 질문 식별번호 */
+	freq_question VARCHAR2(1000) NOT NULL, /* 질문 */
+	freq_answ VARCHAR2(4000) NOT NULL /* 답변 */
+);
+
+CREATE UNIQUE INDEX PK_freq_qna
+	ON freq_qna (
+		freq_number ASC
+	);
+
+ALTER TABLE freq_qna
+	ADD
+		CONSTRAINT PK_freq_qna
+		PRIMARY KEY (
+			freq_number
+		);
+
+/* 안전수칙 */
+CREATE TABLE safety (
+	safety_num VARCHAR2(100) NOT NULL, /* 안전수칙 식별번호 */
+	safety_contents VARCHAR2(4000) NOT NULL /* 안전수칙 내용 */
+);
+
+CREATE UNIQUE INDEX PK_safety
+	ON safety (
+		safety_num ASC
+	);
+
+ALTER TABLE safety
+	ADD
+		CONSTRAINT PK_safety
+		PRIMARY KEY (
+			safety_num
+		);
+
+/* 자전거 방치 신고내역 */
+CREATE TABLE bic_leave (
+	bicycle_leave_id VARCHAR(50) NOT NULL, /* 방치자전거 접수번호 */
+	bicycle_id VARCHAR2(40) NOT NULL, /* 자전거 식별번호 */
+	leave_address VARCHAR2(1000) NOT NULL, /* 방치주소 */
+	leave_address_detail VARCHAR2(1000) /* 상세주소 */
+);
+
+CREATE UNIQUE INDEX PK_bic_leave
+	ON bic_leave (
+		bicycle_leave_id ASC
+	);
+
+ALTER TABLE bic_leave
+	ADD
+		CONSTRAINT PK_bic_leave
+		PRIMARY KEY (
+			bicycle_leave_id
+		);
+
+/* 이용권 정보 */
+CREATE TABLE ticket (
+	ticket_code NUMBER(4) NOT NULL, /* 이용권 식별번호 */
+	ticket_type VARCHAR2(100) NOT NULL, /* 이용권 유형 */
+	ticket_period VARCHAR2(100) NOT NULL, /* 이용권 기간 */
+	ticket_timepass VARCHAR2(100) NOT NULL, /* 이용권 시간 */
+	ticket_price VARCHAR2(100) NOT NULL /* 이용권 가격 */
+);
+
+CREATE UNIQUE INDEX PK_ticket
+	ON ticket (
+		ticket_code ASC
+	);
+
+ALTER TABLE ticket
+	ADD
+		CONSTRAINT PK_ticket
+		PRIMARY KEY (
+			ticket_code
+		);
+
+/* 자전거 파기 내역 */
+CREATE TABLE bic_dest (
+	bicycle_dest VARCHAR2(50) NOT NULL, /* 자전거 파기 식별번호 */
+	bicycle_id VARCHAR2(40), /* 자전거 식별번호 */
+	destroyed_reason VARCHAR2(1000) /* 자전거 파기 사유 */
+);
+
+CREATE UNIQUE INDEX PK_bic_dest
+	ON bic_dest (
+		bicycle_dest ASC
+	);
+
+ALTER TABLE bic_dest
+	ADD
+		CONSTRAINT PK_bic_dest
+		PRIMARY KEY (
+			bicycle_dest
+		);
+
+/* 환승 */
+CREATE TABLE transf (
+	transfer_number VARCHAR2(40) NOT NULL, /* 환승 식별번호 */
+	user_id VARCHAR2(100) NOT NULL, /* 회원 아이디 */
+	voucher_id VARCHAR2(40) NOT NULL, /* 이용권 주문 식별번호 */
+	transfer_time DATE NOT NULL, /* 환승(하차) 시각 */
+	transfer_date DATE NOT NULL /* 환승 마일리지 적립 일자 */
+);
+
+CREATE UNIQUE INDEX PK_transf
+	ON transf (
+		transfer_number ASC
+	);
+
+ALTER TABLE transf
+	ADD
+		CONSTRAINT PK_transf
+		PRIMARY KEY (
+			transfer_number
+		);
+
+ALTER TABLE answ
+	ADD
+		CONSTRAINT FK_u_info_TO_answ
+		FOREIGN KEY (
+			user_id
+		)
+		REFERENCES u_info (
+			user_id
+		);
+
+ALTER TABLE answ
+	ADD
+		CONSTRAINT FK_qna_TO_answ
+		FOREIGN KEY (
+			inquiry_id
+		)
+		REFERENCES qna (
+			inquiry_id
+		);
+
+ALTER TABLE qna
+	ADD
+		CONSTRAINT FK_u_info_TO_qna
+		FOREIGN KEY (
+			user_id
+		)
+		REFERENCES u_info (
+			user_id
+		);
+
+ALTER TABLE u_info
+	ADD
+		CONSTRAINT FK_ticket_TO_u_info
+		FOREIGN KEY (
+			ticket_code
+		)
+		REFERENCES ticket (
+			ticket_code
+		);
+
+ALTER TABLE bic_rent
+	ADD
+		CONSTRAINT FK_bic_info_TO_bic_rent
+		FOREIGN KEY (
+			bicycle_id
+		)
+		REFERENCES bic_info (
+			bicycle_id
+		);
+
+ALTER TABLE bic_rent
+	ADD
+		CONSTRAINT FK_u_info_TO_bic_rent
+		FOREIGN KEY (
+			user_id
+		)
+		REFERENCES u_info (
+			user_id
+		);
+
+ALTER TABLE bic_rent
+	ADD
+		CONSTRAINT FK_t_order_TO_bic_rent
+		FOREIGN KEY (
+			voucher_id
+		)
+		REFERENCES t_order (
+			voucher_id
+		);
+
+ALTER TABLE bic_rent
+	ADD
+		CONSTRAINT FK_bic_std_TO_bic_rent
+		FOREIGN KEY (
+			stand_id_start
+		)
+		REFERENCES bic_std (
+			stand_id
+		);
+
+ALTER TABLE bic_rent
+	ADD
+		CONSTRAINT FK_bic_std_TO_bic_rent2
+		FOREIGN KEY (
+			stand_id_end
+		)
+		REFERENCES bic_std (
+			stand_id
+		);
+
+ALTER TABLE bic_lost
+	ADD
+		CONSTRAINT FK_bic_info_TO_bic_lost
+		FOREIGN KEY (
+			bicycle_id
+		)
+		REFERENCES bic_info (
+			bicycle_id
+		);
+
+ALTER TABLE bic_repr
+	ADD
+		CONSTRAINT FK_bic_info_TO_bic_repr
+		FOREIGN KEY (
+			bicycle_id
+		)
+		REFERENCES bic_info (
+			bicycle_id
+		);
+
+ALTER TABLE user_using
+	ADD
+		CONSTRAINT FK_u_info_TO_user_using
+		FOREIGN KEY (
+			user_id
+		)
+		REFERENCES u_info (
+			user_id
+		);
+
+ALTER TABLE t_order
+	ADD
+		CONSTRAINT FK_u_info_TO_t_order
+		FOREIGN KEY (
+			user_id
+		)
+		REFERENCES u_info (
+			user_id
+		);
+
+ALTER TABLE t_order
+	ADD
+		CONSTRAINT FK_ticket_TO_t_order
+		FOREIGN KEY (
+			ticket_code
+		)
+		REFERENCES ticket (
+			ticket_code
+		);
+
+ALTER TABLE t_order
+	ADD
+		CONSTRAINT FK_paymt_TO_t_order
+		FOREIGN KEY (
+			payment_service_code
+		)
+		REFERENCES paymt (
+			payment_service_code
+		);
+
+ALTER TABLE bic_leave
+	ADD
+		CONSTRAINT FK_bic_info_TO_bic_leave
+		FOREIGN KEY (
+			bicycle_id
+		)
+		REFERENCES bic_info (
+			bicycle_id
+		);
+
+ALTER TABLE bic_dest
+	ADD
+		CONSTRAINT FK_bic_info_TO_bic_dest
+		FOREIGN KEY (
+			bicycle_id
+		)
+		REFERENCES bic_info (
+			bicycle_id
+		);
+
+ALTER TABLE transf
+	ADD
+		CONSTRAINT FK_u_info_TO_transf
+		FOREIGN KEY (
+			user_id
+		)
+		REFERENCES u_info (
+			user_id
+		);
+
+ALTER TABLE transf
+	ADD
+		CONSTRAINT FK_t_order_TO_transf
+		FOREIGN KEY (
+			voucher_id
+		)
+		REFERENCES t_order (
+			voucher_id
+		);
